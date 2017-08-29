@@ -1,0 +1,195 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+	http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+	http://www.springframework.org/schema/context
+	http://www.springframework.org/schema/context/spring-context-3.0.xsd
+	http://www.springframework.org/schema/mvc 
+    http://www.springframework.org/schema/mvc/spring-mvc.xsd
+	">
+	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource"  
+        destroy-method="close">  
+        <property name="driverClass" value="com.mysql.jdbc.Driver"/>  
+        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/java?useUnicode=true&amp;characterEncoding=UTF-8" />
+        <property name="user" value="root" />
+        <property name="password" value="root" />
+        <!--初始化时获取的连接数，取值应在minPoolSize与maxPoolSize之间。Default: 3 -->  
+        <property name="initialPoolSize" value="1" />  
+        <!--连接池中保留的最小连接数。 -->  
+        <property name="minPoolSize" value="1" />  
+        <!--连接池中保留的最大连接数。Default: 15 -->  
+        <property name="maxPoolSize" value="300" />  
+        <!--最大空闲时间,60秒内未使用则连接被丢弃。若为0则永不丢弃。Default: 0 -->  
+        <property name="maxIdleTime" value="60" />  
+        <!--当连接池中的连接耗尽的时候c3p0一次同时获取的连接数。Default: 3 -->  
+        <property name="acquireIncrement" value="5" />  
+        <!--每60秒检查所有连接池中的空闲连接。Default: 0 -->  
+        <property name="idleConnectionTestPeriod" value="60" />  
+    </bean>  
+    <bean id="sessionFactory"  
+        class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">  
+        <!-- 注入数据源 -->  
+        <property name="dataSource" ref="dataSource"></property>  
+        <!-- hibernate映射文件的引入 -->  
+        <property name="mappingResources">  
+            <list>  
+                <value>com/ssh/domain/admin.xml</value>  
+                <value>com/ssh/domain/user.xml</value>
+                <value>com/ssh/domain/carmodel.xml</value>
+                <value>com/ssh/domain/orderrecord.xml</value>
+                <value>com/ssh/domain/customerservice.xml</value>
+                <value>com/ssh/domain/carimage.xml</value>
+            </list>  
+        </property>  
+        <!-- 配置hibernate属性的设置 -->  
+        <property name="hibernateProperties">  
+            <props>  
+                <prop key="hibernate.dialect">org.hibernate.dialect.MySQL5Dialect</prop>  
+                <prop key="hibernate.hbm2ddl.auto">update</prop>  
+                <prop key="hibernate.show_sql">true</prop>  
+                <prop key="hibernate.format_sql">true</prop>  
+            </props>  
+        </property>  
+    </bean>  
+    <bean id="adminDao" class="com.ssh.dao.AdminDaoImpl" scope="singleton">
+		<property name="sessionFactory">
+			<ref bean="sessionFactory"></ref>
+		</property>
+	</bean>
+	<bean id="adminService" class="com.ssh.service.AdminServiceImpl">
+		<property name="adminDao">
+			<ref bean="adminDao"></ref>
+		</property>
+	</bean>
+	<bean id="loginAdminAction" class="com.ssh.action.admin.LoginAdminAction" scope="prototype">
+		<property name="adminService">
+			<ref bean="adminService"></ref>
+		</property>
+	</bean>
+	
+	<bean id="carImageDao" class="com.ssh.dao.CarImageDaoImpl" scope="singleton">
+		<property name="sessionFactory">
+			<ref bean="sessionFactory"></ref>
+		</property>
+	</bean>
+	<bean id="carImageService" class="com.ssh.service.CarImageServiceImpl">
+		<property name="carImageDao">
+			<ref bean="carImageDao"></ref>
+		</property>
+	</bean>
+	<bean id="addCarImageAction" class="com.ssh.action.admin.AddCarImageAction" scope="prototype">
+		<property name="carImageService">
+			<ref bean="carImageService"></ref>
+		</property>
+	</bean>
+	<bean id="viewCarImageAction" class="com.ssh.action.admin.ViewCarImageAction" scope="prototype">
+		<property name="carImageService">
+			<ref bean="carImageService"></ref>
+		</property>
+	</bean>
+	
+	<bean id="carModelDao" class="com.ssh.dao.CarModelDaoImpl" scope="singleton">
+		<property name="sessionFactory">
+			<ref bean="sessionFactory"></ref>
+		</property>
+	</bean>
+	<bean id="carModelService" class="com.ssh.service.CarModelServiceImpl">
+		<property name="carModelDao">
+			<ref bean="carModelDao"></ref>
+		</property>
+	</bean>
+	<bean id="addCarModelAction" class="com.ssh.action.admin.AddCarModelAction" scope="prototype">
+		<property name="carModelService">
+			<ref bean="carModelService"></ref>
+		</property>
+	</bean>
+	<bean id="viewCarModelAction" class="com.ssh.action.admin.ViewCarModelAction" scope="prototype">
+		<property name="carModelService">
+			<ref bean="carModelService"></ref>
+		</property>
+	</bean>
+	<bean id="editCarModelAction" class="com.ssh.action.admin.EditCarModelAction" scope="prototype">
+		<property name="carModelService">
+			<ref bean="carModelService"></ref>
+		</property>
+	</bean>
+	<bean id="deleteCarModelAction" class="com.ssh.action.admin.DeleteCarModelAction" scope="prototype">
+		<property name="carModelService">
+			<ref bean="carModelService"></ref>
+		</property>
+	</bean>
+	<bean id="getCarModelByIdAction" class="com.ssh.action.admin.GetCarModelByIdAction" scope="prototype">
+		<property name="carModelService">
+			<ref bean="carModelService"></ref>
+		</property>
+	</bean>
+
+	<bean id="userDao" class="com.ssh.dao.UserDaoImpl" scope="singleton">
+		<property name="sessionFactory">
+			<ref bean="sessionFactory"></ref>
+		</property>
+	</bean>
+	<bean id="userService" class="com.ssh.service.UserServiceImpl">
+		<property name="userDao">
+			<ref bean="userDao"></ref>
+		</property>
+	</bean>
+	<bean id="addUserAction" class="com.ssh.action.admin.AddUserAction" scope="prototype">
+		<property name="userService">
+			<ref bean="userService"></ref>
+		</property>
+	</bean>
+	<bean id="viewUserAction" class="com.ssh.action.admin.ViewUserAction" scope="prototype">
+		<property name="userService">
+			<ref bean="userService"></ref>
+		</property>
+	</bean>
+	<bean id="deleteUserAction" class="com.ssh.action.admin.DeleteUserAction" scope="prototype">
+		<property name="userService">
+			<ref bean="userService"></ref>
+		</property>
+	</bean>
+	<bean id="editUserAction" class="com.ssh.action.admin.EditUserAction" scope="prototype">
+		<property name="userService">
+			<ref bean="userService"></ref>
+		</property>
+	</bean>
+	<bean id="getUserByIdAction" class="com.ssh.action.admin.GetUserByIdAction" scope="prototype">
+		<property name="userService">
+			<ref bean="userService"></ref>
+		</property>
+	</bean>
+	
+	<bean id="orderRecordDao" class="com.ssh.dao.OrderRecordDaoImpl" scope="singleton">
+		<property name="sessionFactory">
+			<ref bean="sessionFactory"></ref>
+		</property>
+	</bean>
+	<bean id="orderRecordService" class="com.ssh.service.OrderRecordServiceImpl">
+		<property name="orderRecordDao">
+			<ref bean="orderRecordDao"></ref>
+		</property>
+	</bean>
+	<bean id="addOrderRecordAction" class="com.ssh.action.admin.AddOrderRecordAction" scope="prototype">
+		<property name="orderRecordService">
+			<ref bean="orderRecordService"></ref>
+		</property>
+	</bean>
+	<bean id="viewOrderRecordAction" class="com.ssh.action.admin.ViewOrderRecordAction" scope="prototype">
+		<property name="orderRecordService">
+			<ref bean="orderRecordService"></ref>
+		</property>
+	</bean>
+	<bean id="deleteOrderRecordAction" class="com.ssh.action.admin.DeleteOrderRecordAction" scope="prototype">
+		<property name="orderRecordService">
+			<ref bean="orderRecordService"></ref>
+		</property>
+	</bean>
+	<bean id="editOrderRecordAction" class="com.ssh.action.admin.EditOrderRecordAction" scope="prototype">
+		<property name="orderRecordService">
+			<ref bean="orderRecordService"></ref>
+		</property>
+	</bean>
+</beans>
